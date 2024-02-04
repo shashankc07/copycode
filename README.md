@@ -1,7 +1,3 @@
-# copycode
-copycode
-
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,12 +24,17 @@ class Program
         var yamlStream = new YamlStream();
         yamlStream.Load(input);
 
-        var rootNode = yamlStream.Documents[0].RootNode;
+        foreach (var document in yamlStream.Documents)
+        {
+            var specificTagNode = FindNodeWithTag(document.RootNode, specificTag);
 
-        // Assuming your specific tag is a mapping node under the root
-        var specificTagNode = FindNodeWithTag(rootNode, specificTag);
+            if (specificTagNode != null)
+            {
+                return ConvertNodeToDictionary(specificTagNode);
+            }
+        }
 
-        return ConvertNodeToDictionary(specificTagNode);
+        throw new InvalidOperationException($"The specific tag '{specificTag}' was not found in the YAML file.");
     }
 
     static YamlNode FindNodeWithTag(YamlNode node, string tag)
